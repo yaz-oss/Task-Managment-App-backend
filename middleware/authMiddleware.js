@@ -2,6 +2,9 @@
 const jwt =
 require("jsonwebtoken");
 
+const User =
+require("../models/user");
+
 const authMiddleware =
 async (
   req,
@@ -44,6 +47,38 @@ async (
 
     req.user =
       decoded;
+
+    const user =
+      await User.findByPk(
+        decoded.id
+      );
+
+    if (!user) {
+
+      return res.status(401)
+      .json({
+
+        message:
+          "User not found",
+
+      });
+    }
+
+    if (user.blocked) {
+
+      return res.status(403)
+      .json({
+
+        message:
+          "You are blocked by admin",
+
+      });
+    }
+
+    req.user = {
+      ...decoded,
+      role: user.role,
+    };
 
     next();
 

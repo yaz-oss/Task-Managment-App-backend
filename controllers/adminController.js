@@ -1,9 +1,23 @@
 const User = require("../models/user");
 const Task = require("../models/task");
 
+const requireAdmin = (req, res) => {
+  if (req.user.role !== "admin") {
+    res.status(403).json({
+      message: "Admin access only",
+    });
+
+    return false;
+  }
+
+  return true;
+};
+
 exports.getUsers = async (req, res) => {
 
   try {
+
+    if (!requireAdmin(req, res)) return;
 
     const users = await User.findAll({
       include: [Task],
@@ -23,6 +37,8 @@ exports.deleteUser = async (req, res) => {
 
   try {
 
+    if (!requireAdmin(req, res)) return;
+
     const user =
     await User.findByPk(
       req.params.id
@@ -33,6 +49,15 @@ exports.deleteUser = async (req, res) => {
       return res.status(404)
       .json({
         message: "User not found",
+      });
+    }
+
+    if (user.role === "admin") {
+
+      return res.status(400)
+      .json({
+        message:
+        "Admin users cannot be deleted",
       });
     }
 
@@ -61,6 +86,8 @@ exports.blockUser = async (req, res) => {
 
   try {
 
+    if (!requireAdmin(req, res)) return;
+
     const user =
     await User.findByPk(
       req.params.id
@@ -71,6 +98,15 @@ exports.blockUser = async (req, res) => {
       return res.status(404)
       .json({
         message: "User not found",
+      });
+    }
+
+    if (user.role === "admin") {
+
+      return res.status(400)
+      .json({
+        message:
+        "Admin users cannot be blocked",
       });
     }
 
@@ -98,13 +134,7 @@ exports.assignTaskToUser = async (req, res) => {
 
   try {
 
-    if (req.user.role !== "admin") {
-
-      return res.status(403)
-      .json({
-        message: "Admin access only",
-      });
-    }
+    if (!requireAdmin(req, res)) return;
 
     const {
       userId,
