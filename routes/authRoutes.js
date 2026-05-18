@@ -4,9 +4,6 @@ const express =
 const passport =
   require("passport");
 
-const jwt =
-  require("jsonwebtoken");
-
 const router =
   express.Router();
 
@@ -54,66 +51,17 @@ router.get(
   passport.authenticate(
     "google",
     {
+      failureRedirect:
+        "/login",
       session: false,
     }
   ),
 
-  async (req, res) => {
+  (req, res) => {
 
-    try {
-
-      const token =
-        jwt.sign(
-
-          {
-
-            id:
-              req.user.id,
-
-            email:
-              req.user.email,
-
-            role:
-              req.user.role,
-
-          },
-
-          process.env
-            .JWT_SECRET,
-
-          {
-
-            expiresIn:
-              "7d",
-
-          }
-        );
-        console.log(req.user.role);
-      if (
-        req.user.role ===
-        "admin"
-      ) {
-
-        return res.redirect(
-
-          `${process.env.CLIENT_URL}/google-success?token=${encodeURIComponent(token)}&role=admin&username=${encodeURIComponent(req.user.username)}`
-        );
-      }
-
-      return res.redirect(
-
-        `${process.env.CLIENT_URL}/google-success?token=${encodeURIComponent(token)}&role=user&username=${encodeURIComponent(req.user.username)}`
-      );
-
-    } catch (error) {
-
-      res.status(500).json({
-
-        message:
-          "Google login failed",
-
-      });
-    }
+    res.redirect(
+      process.env.CLIENT_URL
+    );
   }
 );
 
