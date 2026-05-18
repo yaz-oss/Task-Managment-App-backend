@@ -24,7 +24,7 @@ passport.use(
           .GOOGLE_CLIENT_SECRET,
 
       callbackURL:
-        "https://yourbackend.onrender.com/auth/google/callback",
+        "https://yourbackend.onrender.com/api/auth/google/callback",
 
     },
 
