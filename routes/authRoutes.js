@@ -60,7 +60,7 @@ router.get(
   (req, res) => {
 
     res.redirect(
-      process.env.CLIENT_URL
+      "https://task-management-app-frontend-sable.vercel.app"
     );
   }
 );
