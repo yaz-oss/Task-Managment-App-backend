@@ -47,14 +47,30 @@ async (req, res) => {
 
   try {
 
+    const validation =
+      Task.validateText({
+        title:
+          req.body.title,
+        description:
+          req.body.description,
+      });
+
+    if (!validation.valid) {
+      return res.status(400)
+      .json({
+        message:
+          validation.message,
+      });
+    }
+
     const task =
       await Task.create({
 
         title:
-          req.body.title,
+          validation.title,
 
         description:
-          req.body.description,
+          validation.description,
 
         status:
           req.body.status || "todo",
@@ -124,14 +140,36 @@ async (req, res) => {
 
     const updates = {};
 
+    const validation =
+      Task.validateText(
+        {
+          title:
+            req.body.title,
+          description:
+            req.body.description,
+        },
+        {
+          partial:
+            true,
+        }
+      );
+
+    if (!validation.valid) {
+      return res.status(400)
+      .json({
+        message:
+          validation.message,
+      });
+    }
+
     if (req.body.title !== undefined) {
       updates.title =
-        req.body.title;
+        validation.title;
     }
 
     if (req.body.description !== undefined) {
       updates.description =
-        req.body.description;
+        validation.description;
     }
 
     if (req.body.status !== undefined) {

@@ -155,6 +155,19 @@ exports.assignTaskToUser = async (req, res) => {
       });
     }
 
+    const validation = Task.validateText({
+      title,
+      description,
+    });
+
+    if (!validation.valid) {
+      return res.status(400)
+      .json({
+        message:
+        validation.message,
+      });
+    }
+
     const user =
     await User.findByPk(userId);
 
@@ -177,8 +190,8 @@ exports.assignTaskToUser = async (req, res) => {
 
     const task =
     await Task.create({
-      title,
-      description,
+      title: validation.title,
+      description: validation.description,
       completed: false,
       assignedTo: user.id,
       assignedBy: req.user.id,
