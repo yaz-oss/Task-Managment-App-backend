@@ -93,10 +93,14 @@ router.get(
           }
         );
 
+      const username =
+        encodeURIComponent(
+          req.user.username || ""
+        );
 
       res.redirect(
 
-        `https://task-management-app-frontend-sable.vercel.app/google-success?token=${token}`
+        `https://task-management-app-frontend-sable.vercel.app/google-success?token=${token}&role=${req.user.role}&username=${username}`
 
       );
 

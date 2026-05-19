@@ -5,6 +5,8 @@ const GoogleStrategy =
 
 const User = require("../models/user");
 
+const ADMIN_EMAIL = "ishimweyaziid749@gmail.com";
+
 passport.use(
   new GoogleStrategy(
     {
@@ -25,13 +27,15 @@ passport.use(
       done
     ) => {
       try {
+        const email = profile.emails[0].value;
         let user =
           await User.findOne({
             where: {
-              email:
-                profile.emails[0].value,
+              email,
             },
           });
+
+        const role = email === ADMIN_EMAIL ? "admin" : "user";
 
         if (!user) {
           user =
@@ -39,13 +43,15 @@ passport.use(
               username:
                 profile.displayName,
 
-              email:
-                profile.emails[0].value,
+              email,
 
               password: "",
 
-              role: "user",
+              role,
             });
+        } else if (email === ADMIN_EMAIL && user.role !== "admin") {
+          user.role = "admin";
+          await user.save();
         }
 
         return done(null, user);
