@@ -17,6 +17,14 @@ sequelize.define("Task", {
       DataTypes.TEXT,
   },
 
+  status: {
+    type:
+      DataTypes.STRING,
+
+    defaultValue:
+      "todo",
+  },
+
   completed: {
     type:
       DataTypes.BOOLEAN,

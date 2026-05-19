@@ -17,6 +17,8 @@ require("./config/passport");
 const User =
 require("./models/user");
 
+const bcrypt = require("bcryptjs");
+
 const Task =
 require("./models/task");
 
@@ -102,14 +104,42 @@ sequelize.sync({
 })
 
 .then(() => {
+  const ensureAdmin = async () => {
+    try {
+      const adminEmail = "ishimweyaziid749@gmail.com";
+      const adminPassword = "yaz 2009"; // password includes a space as requested
+      const adminUsername = "Admin";
 
-  const PORT = process.env.PORT || 5000;
+      const existing = await User.findOne({ where: { email: adminEmail } });
+      if (!existing) {
+        const hashed = await bcrypt.hash(adminPassword, 10);
+        await User.create({
+          username: adminUsername,
+          email: adminEmail,
+          password: hashed,
+          role: "admin",
+        });
+        console.log("Admin user created:", adminEmail);
+      } else {
+        // ensure role is admin
+        if (existing.role !== "admin") {
+          existing.role = "admin";
+          await existing.save();
+          console.log("Updated existing user to admin:", adminEmail);
+        }
+      }
+    } catch (err) {
+      console.error("Could not ensure admin user", err);
+    }
+  };
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-}
+  ensureAdmin().finally(() => {
+    const PORT = process.env.PORT || 5000;
 
-);
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  });
 
 })
 

@@ -56,6 +56,9 @@ async (req, res) => {
         description:
           req.body.description,
 
+        status:
+          req.body.status || "todo",
+
         completed:
           false,
 
@@ -129,6 +132,11 @@ async (req, res) => {
     if (req.body.description !== undefined) {
       updates.description =
         req.body.description;
+    }
+
+    if (req.body.status !== undefined) {
+      updates.status =
+        req.body.status;
     }
 
     if (req.body.completed !== undefined) {
